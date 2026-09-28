@@ -1,6 +1,6 @@
 import { useSelector ,useDispatch } from "react-redux";
-import { addToCart ,removeFromCart ,clearCart, placeOrder,addToWishList} from "./features/productSlice";
-
+import { addToCart ,removeFromCart ,clearCart, placeOrder,addToWishList ,fetchProducts} from "./features/productSlice";
+import { useEffect } from "react";
 
 function App(){
 
@@ -17,6 +17,10 @@ const total = cart.reduce(
 );
 
 const dispatch = useDispatch();
+
+useEffect(()=>{
+  dispatch(fetchProducts());
+},[]);
 
 
  return(
