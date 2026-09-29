@@ -1,6 +1,7 @@
 import { useSelector ,useDispatch } from "react-redux";
-import { addToCart ,removeFromCart ,clearCart, placeOrder,addToWishList ,fetchProducts} from "./features/productSlice";
-import { useEffect } from "react";
+import { addToCart ,removeFromCart ,clearCart, placeOrder,addToWishList ,fetchProducts ,addProduct} from "./features/productSlice";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function App(){
 
@@ -19,13 +20,44 @@ const total = cart.reduce(
 
 const dispatch = useDispatch();
 
+const [name,setName] =useState("");
+const [price ,setPrice ]= useState("");
+
 useEffect(()=>{
   dispatch(fetchProducts());
 },[]);
 
+const handleCreateProduct = async () =>{
+  const response = await  axios.post(
+    "http://localhost:5000/api/products/create",
+    {
+      name,
+      price,
+    }
+    
+  );
+  dispatch(addProduct(response.data));
+  console.log(response.data);
+}
 
  return(
+
  <div>
+     <h2> Add new prodcuct</h2>
+     <input
+       type="text"
+       placeholder="Product name"
+       value ={name}
+       onChange ={(e)=> setName(e.target.value)}
+    />
+     <input
+      type="number"
+      placeholder="Product Price"
+      value={price}
+      onChange={(e) => setPrice(e.target.value)}
+    />
+    <button onClick={handleCreateProduct}>Add product</button>
+
     {products.map((product)=>(
     <div key={product.id}>
       <h2>{product.name}</h2>

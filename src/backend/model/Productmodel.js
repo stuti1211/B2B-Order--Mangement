@@ -8,12 +8,3 @@ export const getAllProducts = async () => {
 
   return result.rows;
 };
-
-
-
-const result = await pool.query(`
-  SELECT COUNT(*) 
-  FROM public.products
-`);
-
-console.log(result.rows);

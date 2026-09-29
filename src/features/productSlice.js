@@ -14,6 +14,9 @@ const productSlice = createSlice({
         setProducts: (state, action) => {
                  state.products = action.payload;
               },
+        addProduct: (state, action) => {
+            state.products.push(action.payload);
+          },
 
         addToCart: (state, action) => {
             const existingProduct = state.cart.find(
@@ -80,4 +83,4 @@ export const fetchProducts = () => async (dispatch) => {
 
 
 export default productSlice.reducer;
-export const { addToCart, removeFromCart ,clearCart ,placeOrder,addToWishList ,setProducts} = productSlice.actions;
+export const { addToCart, removeFromCart ,clearCart ,placeOrder,addToWishList ,setProducts, addProduct} = productSlice.actions;
