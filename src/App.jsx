@@ -5,10 +5,11 @@ import { useEffect } from "react";
 function App(){
 
 const products = useSelector((state) => state.products.products);
+//console.log("products", products);
 const cart = useSelector((state) => state.products.cart);
 const orders = useSelector((state) => state.products.orders);
 console.log("orders", orders);
-console.log(cart);
+console.log("cart",cart);
 const wishlists =useSelector((state)=>state.products.wishlists);
 console.log("wishlist", wishlists);
 const total = cart.reduce( 

@@ -65,16 +65,19 @@ const productSlice = createSlice({
 
 
 export const fetchProducts = () => async (dispatch) => {
+  console.log("fetchProducts called");
+
+  //console.log("before API");
+
   const response = await axios.get(
     "http://localhost:5000/api/products"
   );
 
-  dispatch({
-    type: "products/setProducts",
-    payload: response.data,
-  });
+  // console.log("after API");
+  // console.log(response.data);
+  dispatch(setProducts(response.data));
 };
 
 
 export default productSlice.reducer;
-export const { addToCart, removeFromCart ,clearCart ,placeOrder,addToWishList} = productSlice.actions;
+export const { addToCart, removeFromCart ,clearCart ,placeOrder,addToWishList ,setProducts} = productSlice.actions;

@@ -2,6 +2,18 @@ import { pool } from "../config/db.js";
 
 
 export const getAllProducts = async () => {
-  const result = await pool.query("SELECT * FROM products");
+  const result = await pool.query("SELECT * FROM public.products");
+
+  console.log(result.rows);
+
   return result.rows;
 };
+
+
+
+const result = await pool.query(`
+  SELECT COUNT(*) 
+  FROM public.products
+`);
+
+console.log(result.rows);
