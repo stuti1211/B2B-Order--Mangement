@@ -11,26 +11,26 @@ const productSlice = createSlice({
     },
     reducers:{
 
-        setProducts: (state, action) => {
-                 state.products = action.payload;
-              },
-        addProduct: (state, action) => {
-            state.products.push(action.payload);
-          },
+      setProducts: (state, action) => {
+              state.products = action.payload;
+            },
+      addProduct: (state, action) => {
+          state.products.push(action.payload);
+        },
 
-        addToCart: (state, action) => {
-            const existingProduct = state.cart.find(
-             (product)=> product.id== action.payload.id
-            );
-            if(existingProduct){
-                existingProduct.quantity +=1;
-            }
-            else{
-                state.cart.push({
-                    ...action.payload,
-                    quantity:1,
-                })
-            }
+      addToCart: (state, action) => {
+          const existingProduct = state.cart.find(
+          (product)=> product.id== action.payload.id
+          );
+          if(existingProduct){
+              existingProduct.quantity +=1;
+          }
+          else{
+              state.cart.push({
+                  ...action.payload,
+                  quantity:1,
+              })
+          }
      },
         removeFromCart :(state,action)=>{
             const existingProduct = state.cart.find(
@@ -61,7 +61,15 @@ const productSlice = createSlice({
         if(!existingProduct)
         state.wishlists.push(action.payload);
      },
-      
+      updateProduct:(state,action)=>{
+        const existingProduct  = state.products.find(
+         (product)=> product.id === action.payload.id
+        );
+        if (existingProduct) {
+            existingProduct.name = action.payload.name;
+            existingProduct.price = action.payload.price;
+          }
+      }
 
 
 }});
@@ -79,8 +87,9 @@ export const fetchProducts = () => async (dispatch) => {
   // console.log("after API");
   // console.log(response.data);
   dispatch(setProducts(response.data));
+  
 };
 
 
 export default productSlice.reducer;
-export const { addToCart, removeFromCart ,clearCart ,placeOrder,addToWishList ,setProducts, addProduct} = productSlice.actions;
+export const { addToCart, removeFromCart ,clearCart ,placeOrder,addToWishList ,setProducts, addProduct ,updateProduct} = productSlice.actions;

@@ -1,6 +1,7 @@
 import express from "express";
 import { pool } from "./config/db.js";
 import productRoutes from "./routes/productRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 import cors from "cors";
 
@@ -17,6 +18,7 @@ pool.query("SELECT NOW()")
   .catch((error) => console.log(error));
 
 app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.listen(5000, () => {
   console.log("Server running on port 5000");

@@ -1,5 +1,5 @@
 import { useSelector ,useDispatch } from "react-redux";
-import { addToCart ,removeFromCart ,clearCart, placeOrder,addToWishList ,fetchProducts ,addProduct} from "./features/productSlice";
+import { addToCart ,removeFromCart ,clearCart, placeOrder,addToWishList ,fetchProducts ,addProduct,updateProduct} from "./features/productSlice";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -22,12 +22,37 @@ const dispatch = useDispatch();
 
 const [name,setName] =useState("");
 const [price ,setPrice ]= useState("");
+const [editProduct ,setEditProduct] = useState(null);
+console.log("editProduct", editProduct);
 
 useEffect(()=>{
   dispatch(fetchProducts());
 },[]);
 
+useEffect(() => {
+  if (editProduct) {
+    setName(editProduct.name);
+    setPrice(editProduct.price);
+  }
+}, [editProduct]);
+
 const handleCreateProduct = async () =>{
+   if(editProduct){
+      const response = await axios.put(
+      `http://localhost:5000/api/products/${editProduct.id}`,
+      {
+        name,
+        price,
+      }
+      );
+      dispatch(updateProduct(response.data));
+      setEditProduct(null);
+      setName("");
+      setPrice("");
+
+      return;
+   }
+
   const response = await  axios.post(
     "http://localhost:5000/api/products/create",
     {
@@ -37,12 +62,14 @@ const handleCreateProduct = async () =>{
     
   );
   dispatch(addProduct(response.data));
+  setName("");
+  setPrice("");
   console.log(response.data);
 }
 
  return(
 
- <div>
+ <div> 
      <h2> Add new prodcuct</h2>
      <input
        type="text"
@@ -56,7 +83,9 @@ const handleCreateProduct = async () =>{
       value={price}
       onChange={(e) => setPrice(e.target.value)}
     />
-    <button onClick={handleCreateProduct}>Add product</button>
+    <button onClick={handleCreateProduct}>
+        {editProduct ? "Update Product" : "Add Product"}
+        </button>
 
     {products.map((product)=>(
     <div key={product.id}>
@@ -65,6 +94,7 @@ const handleCreateProduct = async () =>{
     <button onClick ={()=>dispatch (addToWishList(product))}>Add to Wishlist</button>
     <button onClick={()=>dispatch(addToCart(product))}>Add to Cart</button>
     <button onClick={()=>dispatch(removeFromCart(product.id))}>Remove</button>
+    <button onClick={()=> setEditProduct(product)}>Edit</button>
     </div>
      ))}
      <h1>Cart</h1>
