@@ -8,4 +8,12 @@ export const createOrder = async(items)=>{
    );
 
   return result.rows[0];
-}
+};
+
+export const getAllOrders = async () => {
+  const result = await pool.query(
+    "SELECT * FROM public.orders"
+  );
+
+  return result.rows;
+};

@@ -16,7 +16,16 @@ const productSlice = createSlice({
             },
       addProduct: (state, action) => {
           state.products.push(action.payload);
+          
         },
+        setOrders: (state, action) => {
+          state.orders = action.payload;
+        },
+
+      addOrder:(state,action)=>{
+         state.orders.push(action.payload);
+      },
+
 
       addToCart: (state, action) => {
           const existingProduct = state.cart.find(
@@ -48,10 +57,6 @@ const productSlice = createSlice({
     },
        clearCart :(state) =>{
          state.cart=[];
-       },
-       placeOrder:(state)=>{
-        state.orders.push(state.cart);
-        state.cart=[];
        },
 
      addToWishList:(state,action)=>{
@@ -90,6 +95,13 @@ export const fetchProducts = () => async (dispatch) => {
   
 };
 
+export const fetchOrders = () => async (dispatch) => {
+  const response = await axios.get(
+    "http://localhost:5000/api/orders/allOrders"
+  );
+
+  dispatch(setOrders(response.data));
+};
 
 export default productSlice.reducer;
-export const { addToCart, removeFromCart ,clearCart ,placeOrder,addToWishList ,setProducts, addProduct ,updateProduct} = productSlice.actions;
+export const { addToCart, removeFromCart ,clearCart ,addToWishList ,setProducts, addProduct ,updateProduct,addOrder ,setOrders} = productSlice.actions;

@@ -1,4 +1,4 @@
-import { createOrder } from "../model/orderModel.js";
+import { createOrder ,getAllOrders} from "../model/orderModel.js";
 
 export const createNewOrder = async(req,res)=>{
       const { items} = req.body;
@@ -7,4 +7,10 @@ export const createNewOrder = async(req,res)=>{
      //console.log(order);
      return res.json(order);
 
+};
+
+export const getOrders = async (req, res) => {
+  const orders = await getAllOrders();
+
+  return res.json(orders);
 };

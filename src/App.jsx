@@ -1,5 +1,5 @@
 import { useSelector ,useDispatch } from "react-redux";
-import { addToCart ,removeFromCart ,clearCart, placeOrder,addToWishList ,fetchProducts ,addProduct,updateProduct} from "./features/productSlice";
+import { addToCart ,removeFromCart ,clearCart, addToWishList ,fetchProducts ,addProduct,updateProduct,addOrder,fetchOrders} from "./features/productSlice";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -28,6 +28,10 @@ console.log("editProduct", editProduct);
 useEffect(()=>{
   dispatch(fetchProducts());
 },[]);
+
+useEffect(() => {
+  dispatch(fetchOrders());
+}, []);
 
 useEffect(() => {
   if (editProduct) {
@@ -65,7 +69,24 @@ const handleCreateProduct = async () =>{
   setName("");
   setPrice("");
   console.log(response.data);
-}
+};
+
+const handlePlaceOrder = async ()=>{
+   const response = await axios.post(
+     "http://localhost:5000/api/orders",
+        {
+          items: cart,
+        }
+   );
+    
+    dispatch(addOrder(response.data));
+    dispatch(clearCart());
+};
+
+
+
+
+
 
  return(
 
@@ -108,15 +129,16 @@ const handleCreateProduct = async () =>{
     ))}
      <h1>Total:{total}</h1>
      <button onClick={()=>dispatch(clearCart(cart))}>Clear Cart</button>
-     <button onClick={() => dispatch(placeOrder())}> Place Order</button>
+     <button onClick={handlePlaceOrder}> Place Order</button>
      <h2>Orders</h2>
-      {orders.map((order, index) => (
-        <div key={index}>
-          <h3>Order {index + 1}</h3>
+      {orders.map((order) => (
+        <div key={order.id}>
+          <h3>Order {order.id}</h3>
+          <p>Status: {order.status}</p>
             <p> Total: ₹
-              {order.reduce((sum, product) => sum + product.price * product.quantity, 0)}
+              {order.items.reduce((sum, product) => sum + product.price * product.quantity, 0)}
             </p>
-          {order.map((product) => (
+          {order.items.map((product) => (
             <p key={product.id}>
               {product.name} × {product.quantity}
             </p>
