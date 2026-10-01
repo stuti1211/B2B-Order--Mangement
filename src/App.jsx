@@ -1,7 +1,8 @@
 import { useSelector ,useDispatch } from "react-redux";
-import { addToCart ,removeFromCart ,clearCart, addToWishList ,fetchProducts ,addProduct,updateProduct,addOrder,fetchOrders} from "./features/productSlice";
+import { addToCart ,removeFromCart ,clearCart, addToWishList ,fetchProducts ,addProduct,updateProduct,addOrder,fetchOrders,updateOrderStatus} from "./features/productSlice";
 import { useEffect, useState } from "react";
 import axios from "axios";
+
 
 function App(){
 
@@ -9,6 +10,7 @@ const products = useSelector((state) => state.products.products);
 //console.log("products", products);
 const cart = useSelector((state) => state.products.cart);
 const orders = useSelector((state) => state.products.orders);
+console.log("Redux orders:", orders);
 console.log("orders", orders);
 console.log("cart",cart);
 const wishlists =useSelector((state)=>state.products.wishlists);
@@ -82,11 +84,12 @@ const handlePlaceOrder = async ()=>{
     dispatch(addOrder(response.data));
     dispatch(clearCart());
 };
-
-
-
-
-
+const updateStatus = async (id, status) => {
+ const response = await axios.patch(`http://localhost:5000/api/orders/${id}/status`, {
+    status: status
+  });
+  dispatch(updateOrderStatus(response.data));
+};
 
  return(
 
@@ -134,7 +137,15 @@ const handlePlaceOrder = async ()=>{
       {orders.map((order) => (
         <div key={order.id}>
           <h3>Order {order.id}</h3>
-          <p>Status: {order.status}</p>
+          <select 
+          value={order.status}
+          onChange={(e)=> updateStatus(order.id ,e.target.value)}>
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+          </select>
+
             <p> Total: ₹
               {order.items.reduce((sum, product) => sum + product.price * product.quantity, 0)}
             </p>
