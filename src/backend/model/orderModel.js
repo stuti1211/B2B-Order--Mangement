@@ -17,3 +17,11 @@ export const getAllOrders = async () => {
 
   return result.rows;
 };
+
+export const updateOrderStatus = async (id,status)=>{
+     const result = await pool.query(
+       "UPDATE public.orders SET status = $1 WHERE id = $2 RETURNING *",
+        [status, id]
+     );
+    return result.rows[0];
+};

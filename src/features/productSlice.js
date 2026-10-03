@@ -74,8 +74,17 @@ const productSlice = createSlice({
             existingProduct.name = action.payload.name;
             existingProduct.price = action.payload.price;
           }
-      }
+      },
+      updateOrderStatus:(state,action)=>{
+        const updatedOrder =action.payload;
+        const index = state.orders.findIndex(
+        (order) => order.id === updatedOrder.id
+         );
 
+       if (index !== -1) {
+        state.orders[index] = updatedOrder;
+      }
+          }
 
 }});
 
@@ -104,4 +113,4 @@ export const fetchOrders = () => async (dispatch) => {
 };
 
 export default productSlice.reducer;
-export const { addToCart, removeFromCart ,clearCart ,addToWishList ,setProducts, addProduct ,updateProduct,addOrder ,setOrders} = productSlice.actions;
+export const { addToCart, removeFromCart ,clearCart ,addToWishList ,setProducts, addProduct ,updateProduct,addOrder ,setOrders,updateOrderStatus} = productSlice.actions;
