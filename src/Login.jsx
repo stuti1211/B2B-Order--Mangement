@@ -21,10 +21,15 @@ const handleLogin = async  () =>{
       }
 
     );
-   const user = response.data;
-   dispatch(setuser(user));
-   console.log(user);
-   console.log(user.role);
+    const user = response.data.user;
+    const token = response.data.token;
+     console.log("User:", user);
+     console.log("Token:", token);
+    dispatch(setuser({
+        user: response.data.user,
+        token: response.data.token
+  }));
+   
 }
 
 return(

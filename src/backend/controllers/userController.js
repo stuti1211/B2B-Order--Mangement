@@ -1,4 +1,5 @@
 import { createUser, getUserByEmail } from "../model/userModel.js";
+import jwt from "jsonwebtoken";
 
 export const signup = async(req,res)=>{
    const {name, email, password }  = req.body;
@@ -18,5 +19,16 @@ export const login = async(req,res)=>{
      return res.status(401).json({message:"wrong password"})
    }
 
-  return res.json(user);
+   const token = jwt.sign(
+    {
+    userId: user.id,
+    role: user.role
+    },
+    "mysecretkey"
+   )
+
+  return res.json({
+    user,
+    token
+  });
 };

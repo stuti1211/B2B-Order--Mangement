@@ -17,7 +17,7 @@ console.log("cart",cart);
 const wishlists =useSelector((state)=>state.products.wishlists);
 console.log("wishlist", wishlists);
 const user = useSelector((state) => state.auth.user);
- console.log(user?.role);
+console.log("User in App:", user);
 console.log("Logged in user:", user);
 const total = cart.reduce( 
   (sum,product)=> sum + product.quantity *product.price ,0
