@@ -2,6 +2,7 @@ import { useSelector ,useDispatch } from "react-redux";
 import { addToCart ,removeFromCart ,clearCart, addToWishList ,fetchProducts ,addProduct,updateProduct,addOrder,fetchOrders,updateOrderStatus} from "./features/productSlice";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Login from "./Login";
 
 
 function App(){
@@ -15,6 +16,9 @@ console.log("orders", orders);
 console.log("cart",cart);
 const wishlists =useSelector((state)=>state.products.wishlists);
 console.log("wishlist", wishlists);
+const user = useSelector((state) => state.auth.user);
+ console.log(user?.role);
+console.log("Logged in user:", user);
 const total = cart.reduce( 
   (sum,product)=> sum + product.quantity *product.price ,0
 
@@ -91,78 +95,186 @@ const updateStatus = async (id, status) => {
   dispatch(updateOrderStatus(response.data));
 };
 
- return(
+ return (
+  <div>
 
- <div> 
-     <h2> Add new prodcuct</h2>
-     <input
-       type="text"
-       placeholder="Product name"
-       value ={name}
-       onChange ={(e)=> setName(e.target.value)}
-    />
-     <input
-      type="number"
-      placeholder="Product Price"
-      value={price}
-      onChange={(e) => setPrice(e.target.value)}
-    />
-    <button onClick={handleCreateProduct}>
-        {editProduct ? "Update Product" : "Add Product"}
+    <Login />
+
+    {/* ================= ADMIN SECTION ================= */}
+
+    {user?.role === "admin" && (
+      <>
+        <h1>Admin Section</h1>
+
+        {/* Add / Update Product */}
+        <h2>Add New Product</h2>
+
+        <input
+          type="text"
+          placeholder="Product name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <input
+          type="number"
+          placeholder="Product Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
+
+        <button onClick={handleCreateProduct}>
+          {editProduct ? "Update Product" : "Add Product"}
         </button>
 
-    {products.map((product)=>(
-    <div key={product.id}>
-      <h2>{product.name}</h2>
-      <p>{product.price}</p>
-    <button onClick ={()=>dispatch (addToWishList(product))}>Add to Wishlist</button>
-    <button onClick={()=>dispatch(addToCart(product))}>Add to Cart</button>
-    <button onClick={()=>dispatch(removeFromCart(product.id))}>Remove</button>
-    <button onClick={()=> setEditProduct(product)}>Edit</button>
-    </div>
-     ))}
-     <h1>Cart</h1>
-     {cart.map((product)=>(
-      <div key={product.id}>
-        <h2>{product.name}</h2>
-        <p>{product.price}</p>
-        <p>Quantity:{product.quantity}</p>
-        
-      </div>
-    ))}
-     <h1>Total:{total}</h1>
-     <button onClick={()=>dispatch(clearCart(cart))}>Clear Cart</button>
-     <button onClick={handlePlaceOrder}> Place Order</button>
-     <h2>Orders</h2>
-      {orders.map((order) => (
-        <div key={order.id}>
-          <h3>Order {order.id}</h3>
-          <select 
-          value={order.status}
-          onChange={(e)=> updateStatus(order.id ,e.target.value)}>
-            <option value="Pending">Pending</option>
-            <option value="Processing">Processing</option>
-            <option value="Shipped">Shipped</option>
-            <option value="Delivered">Delivered</option>
-          </select>
+        {/* Product List */}
+        <h2>Products</h2>
 
-            <p> Total: ₹
-              {order.items.reduce((sum, product) => sum + product.price * product.quantity, 0)}
+        {products.map((product) => (
+          <div key={product.id}>
+            <h3>{product.name}</h3>
+            <p>{product.price}</p>
+
+            <button onClick={() => setEditProduct(product)}>
+              Edit
+            </button>
+          </div>
+        ))}
+
+        {/* Orders - Admin can manage order status */}
+        <h2>Orders</h2>
+
+        {orders.map((order) => (
+          <div key={order.id}>
+            <h3>Order {order.id}</h3>
+
+            <select
+              value={order.status}
+              onChange={(e) =>
+                updateStatus(order.id, e.target.value)
+              }
+            >
+              <option value="Pending">Pending</option>
+              <option value="Processing">Processing</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+
+            <p>
+              Total: ₹
+              {order.items.reduce(
+                (sum, product) =>
+                  sum + product.price * product.quantity,
+                0
+              )}
             </p>
-          {order.items.map((product) => (
-            <p key={product.id}>
-              {product.name} × {product.quantity}
+
+            {order.items.map((product) => (
+              <p key={product.id}>
+                {product.name} × {product.quantity}
+              </p>
+            ))}
+          </div>
+        ))}
+      </>
+    )}
+
+    {/* ================= CUSTOMER SECTION ================= */}
+
+    {user?.role === "customer" && (
+      <>
+        <h1>Customer Section</h1>
+
+        {/* Products */}
+        <h2>Products</h2>
+
+        {products.map((product) => (
+          <div key={product.id}>
+            <h3>{product.name}</h3>
+            <p>{product.price}</p>
+
+            <button
+              onClick={() => dispatch(addToWishList(product))}
+            >
+              Add to Wishlist
+            </button>
+
+            <button
+              onClick={() => dispatch(addToCart(product))}
+            >
+              Add to Cart
+            </button>
+          </div>
+        ))}
+
+        {/* Cart */}
+        <h2>Cart</h2>
+
+        {cart.map((product) => (
+          <div key={product.id}>
+            <h3>{product.name}</h3>
+            <p>{product.price}</p>
+            <p>Quantity: {product.quantity}</p>
+
+            <button
+              onClick={() =>
+                dispatch(removeFromCart(product.id))
+              }
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+
+        <h2>Total: ₹{total}</h2>
+
+        <button onClick={() => dispatch(clearCart(cart))}>
+          Clear Cart
+        </button>
+
+        <button onClick={handlePlaceOrder}>
+          Place Order
+        </button>
+
+        {/* Wishlist */}
+        <h2>Wishlist</h2>
+
+        {wishlists.map((product) => (
+          <div key={product.id}>
+            <p>
+              {product.name} - ₹{product.price}
             </p>
-          ))}
-        </div>
-      ))}
-      <h2>Wishlist</h2>
-      {wishlists.map((product)=>(
-        <div key={product.id}>
-          <p>{product.name} - ${product.price}</p>
-          </div>  
-      ))}
-      
+          </div>
+        ))}
+
+        {/* Customer Orders */}
+        <h2>My Orders</h2>
+
+        {orders.map((order) => (
+          <div key={order.id}>
+            <h3>Order {order.id}</h3>
+
+            <p>Status: {order.status}</p>
+
+            <p>
+              Total: ₹
+              {order.items.reduce(
+                (sum, product) =>
+                  sum + product.price * product.quantity,
+                0
+              )}
+            </p>
+
+            {order.items.map((product) => (
+              <p key={product.id}>
+                {product.name} × {product.quantity}
+              </p>
+            ))}
+          </div>
+        ))}
+      </>
+    )}
+
   </div>
 );
 }
